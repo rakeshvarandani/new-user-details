@@ -4,6 +4,7 @@ package com.practise.new_user_details.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.practise.new_user_details.Service.UserDetailsService;
 import com.practise.new_user_details.model.Car;
 import com.practise.new_user_details.model.User;
 import com.practise.new_user_details.repository.CarRepo;
@@ -29,9 +30,12 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping({"/user-details"})
 public class UserController {
-    @Generated
+
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    UserDetailsService userDetailsService;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -40,43 +44,45 @@ public class UserController {
     public UserController() {
     }
 
+
     @GetMapping({"/getUser/{id}"})
-    public Mono<Optional<User>> getByID(@PathVariable String id) {
-        return Mono.just(this.userRepository.findById(id));
+    public Optional<User> getByID(@PathVariable String id) {
+        return userDetailsService.getUserById(id);
     }
 
     @GetMapping({"/getAllUsers"})
-    public Flux<List<User>> getAllUsers() {
-        return Flux.just(this.userRepository.findAll());
-    }
-
-    @GetMapping({"/util"})
-    public void method2() throws JsonProcessingException {
-        this.logger.info("returning 1", "no error happened");
-        User user1 = new User();
-        user1.setId("1");
-        user1.setName("Rakesh");
-        Car balenoCar = new Car();
-        balenoCar.setCarCompany("Maruti");
-        balenoCar.setUser(user1);
-        balenoCar.setCarCompany("A");
-        balenoCar.setPurchaseDate(Date.valueOf(LocalDate.of(2013, 9, 3)));
-        List<Car> rakeshcar = new ArrayList();
-        rakeshcar.add(balenoCar);
-        user1.setCarowned(rakeshcar);
-        ObjectWriter ow = (new ObjectMapper()).writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(user1);
-        System.out.println(json);
+    public List<User> getAllUsers() {
+             return userDetailsService.findALlUsers();
     }
 
     @PostMapping({"/addUser"})
-    public Mono<User> addUser(@RequestBody User user) {
-        return Mono.just((User)this.userRepository.save(user));
+    public User addUser(@RequestBody User user) {
+        return userDetailsService.saveUser(user);
     }
 
     @PostMapping({"/addCar"})
-    public Mono<Car> addCar(@RequestBody Car car) {
-        return Mono.just((Car)this.carRepo.save(car));
+    public Car addCar(@RequestBody Car car) {
+        return userDetailsService.saveCar(car);
     }
+
+//    @GetMapping({"/util"})
+//    public void method2() throws JsonProcessingException {
+//        this.logger.info("returning 1", "no error happened");
+//        User user1 = new User();
+//        user1.setId("1");
+//        user1.setName("Rakesh");
+//        Car balenoCar = new Car();
+//        balenoCar.setCarCompany("Maruti");
+//        balenoCar.setUser(user1);
+//        balenoCar.setCarCompany("A");
+//        balenoCar.setPurchaseDate(Date.valueOf(LocalDate.of(2013, 9, 3)));
+//        List<Car> rakeshcar = new ArrayList();
+//        rakeshcar.add(balenoCar);
+//        user1.setCarowned(rakeshcar);
+//        ObjectWriter ow = (new ObjectMapper()).writer().withDefaultPrettyPrinter();
+//        String json = ow.writeValueAsString(user1);
+//        System.out.println(json);
+//    }
+
 }
 
