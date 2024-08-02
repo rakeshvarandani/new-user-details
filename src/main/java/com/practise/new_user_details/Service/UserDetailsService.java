@@ -5,12 +5,14 @@ import com.practise.new_user_details.model.User;
 import com.practise.new_user_details.repository.CarRepo;
 import com.practise.new_user_details.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Component
 public class UserDetailsService {
 
     @Autowired
@@ -24,7 +26,7 @@ public class UserDetailsService {
         return userRepository.findById(userId);
     }
 
-    public List<User> findALlUsers(){
+    public List<User> findAllUsers(){
         return userRepository.findAll();
     }
 
